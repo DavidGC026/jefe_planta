@@ -13,7 +13,50 @@ const EvaluationScreenPersonal = ({ onComplete, onSkipToResults, username }) => 
   const [evaluationStarted, setEvaluationStarted] = useState(false);
   const [loading, setLoading] = useState(false);
   const [evaluationData, setEvaluationData] = useState(null);
-  const [userName, setUserName] = useState(username || 'usuario1');
+  // Obtener el nombre de usuario desde la URL si existe
+  function getUsuarioNombreFromURL() {
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      return params.get('usuario_nombre');
+    }
+    return null;
+  }
+
+  // Obtener el email de usuario desde la URL si existe
+  function getUsuarioEmailFromURL() {
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      return params.get('usuario_email');
+    }
+    return null;
+  }
+
+  // Función para obtener datos del usuario por email
+  async function fetchUserDataByEmail(email) {
+    try {
+      const response = await fetch(`/jefedeplanta/api/get-user-by-email.php?email=${encodeURIComponent(email)}`);
+      const data = await response.json();
+      
+      if (data.success && data.data) {
+        return data.data.nombre || data.data.name || email; // Return name or fallback to email
+      } else {
+        console.warn('User not found by email, using email as name');
+        return email; // Use email as name if user not found
+      }
+    } catch (error) {
+      console.error('Error fetching user data by email:', error);
+      return email; // Use email as name on error
+    }
+  }
+
+  // Usar el valor de la URL si existe, si no el prop, si no 'usuario1'
+  const [userName, setUserName] = useState(() => {
+    return getUsuarioNombreFromURL() || username || 'usuario1';
+  });
+
+  const [userEmail, setUserEmail] = useState(() => {
+    return getUsuarioEmailFromURL();
+  });
 
   // Ref para scroll al inicio
   const evaluationContentRef = useRef(null);
@@ -23,6 +66,36 @@ const EvaluationScreenPersonal = ({ onComplete, onSkipToResults, username }) => 
       loadEvaluationData();
     }
   }, []);
+
+  // Effect to fetch user data by email if email parameter is present
+  useEffect(() => {
+    const initializeUserData = async () => {
+      if (userEmail && !getUsuarioNombreFromURL()) {
+        // If we have an email but no nombre parameter, fetch user data by email
+        try {
+          setLoading(true);
+          const fetchedName = await fetchUserDataByEmail(userEmail);
+          setUserName(fetchedName);
+          
+          toast({
+            title: "✅ Usuario encontrado",
+            description: `Datos cargados para: ${fetchedName}`
+          });
+        } catch (error) {
+          console.error('Error initializing user data:', error);
+          toast({
+            title: "⚠️ Advertencia",
+            description: "No se pudo obtener el nombre del usuario por email, usando email como nombre"
+          });
+          setUserName(userEmail); // Fallback to email
+        } finally {
+          setLoading(false);
+        }
+      }
+    };
+
+    initializeUserData();
+  }, [userEmail]);
 
   // Scroll al inicio cuando cambia la sección
   useEffect(() => {
@@ -37,25 +110,31 @@ const EvaluationScreenPersonal = ({ onComplete, onSkipToResults, username }) => 
   const loadEvaluationData = async () => {
     try {
       setLoading(true);
-      
+
       // Obtener preguntas reales de la API
       const response = await fetch('/jefedeplanta/api/get-questions.php?tipo=personal&rol=jefe_planta');
       const data = await response.json();
-      
+
       if (data.error) {
         throw new Error(data.error);
       }
 
       // The API returns {success: true, data: [sections]}
       const sections = data.data || [];
-      
+
+      // Verificar que sections es un array
+      if (!Array.isArray(sections)) {
+        throw new Error('Los datos de la API no tienen el formato esperado');
+      }
+
       // Transform the API data to match frontend expectations
       const transformedSections = sections.map(section => ({
         ...section,
         nombre: section.name, // API returns 'name', frontend expects 'nombre'
-        ponderacion: section.ponderacion || 10 // Ensure ponderacion exists
+        ponderacion: section.ponderacion || 10, // Ensure ponderacion exists
+        preguntas: section.preguntas || [] // Ensure preguntas is an array
       }));
-      
+
       setEvaluationData({ secciones: transformedSections });
       setEvaluationStarted(true);
     } catch (error) {
@@ -97,7 +176,7 @@ const EvaluationScreenPersonal = ({ onComplete, onSkipToResults, username }) => 
     evaluationData.secciones.forEach((section, sectionIndex) => {
       section.preguntas.forEach((question, qIndex) => {
         const questionId = `${selectedRole}-${sectionIndex}-${qIndex}`;
-        
+
         // Generar respuesta aleatoria con tendencia hacia respuestas positivas
         const randomValue = Math.random();
         let answer;
@@ -161,79 +240,52 @@ const EvaluationScreenPersonal = ({ onComplete, onSkipToResults, username }) => 
     try {
       setLoading(true);
 
-      // Calcular puntuación final
-      let totalScore = 0;
-      let totalNormalQuestions = 0;
-      let correctNormalAnswers = 0;
-      const calificacionesSecciones = {};
-
-      // Calcular por secciones
-      evaluationData.secciones.forEach((seccion, sectionIndex) => {
-        let seccionScore = 0;
-        let seccionQuestions = 0;
-        let seccionCorrect = 0;
-
-        seccion.preguntas.forEach((question, qIndex) => {
-          const key = `${selectedRole}-${sectionIndex}-${qIndex}`;
-          const selectedAnswer = answers[key];
-
-          if (selectedAnswer && !question.es_trampa) {
-            seccionQuestions++;
-            totalNormalQuestions++;
-
-            if (selectedAnswer === 'si') {
-              seccionScore += 10;
-              seccionCorrect++;
-              correctNormalAnswers++;
-            }
-          }
-        });
-
-        const seccionPercentage = seccionQuestions > 0 ? (seccionCorrect / seccionQuestions) * 100 : 0;
-        calificacionesSecciones[seccion.nombre] = {
-          porcentaje: seccionPercentage,
-          ponderacion: seccion.ponderacion,
-          contribucion: (seccionPercentage * seccion.ponderacion) / 100
-        };
-
-        totalScore += (seccionPercentage * seccion.ponderacion) / 100;
-      });
+      // Usar el nuevo método de cálculo del servicio de base de datos
+      const scoreResult = databaseService.calculateScore(evaluationData.secciones, answers);
 
       // Preparar datos para guardar en la base de datos
       const evaluacionData = {
         nombre: userName,
-        calificaciones_secciones: calificacionesSecciones,
-        total_obtenido: Math.round(totalScore),
+        calificaciones_secciones: scoreResult.calificacionesSecciones,
+        total_obtenido: scoreResult.totalScore,
         respuestas: answers,
-        observaciones: `Evaluación de personal completada - Jefe de Planta - Puntuación: ${Math.round(totalScore)}%`
+        observaciones: `Evaluación de personal completada - Jefe de Planta - Puntuación: ${scoreResult.totalScore}%`,
+        pass: scoreResult.pass,
+        trapIncorrect: scoreResult.trapIncorrect,
+        trapQuestions: scoreResult.trapQuestions
       };
 
-      // Guardar en base de datos de resultados
-      const savedResult = databaseService.saveResult(evaluacionData);
+      // Guardar en base de datos MySQL
+      const savedResult = await databaseService.saveResult(evaluacionData);
 
       const resultsData = {
         answers,
-        score: Math.round(totalScore),
-        totalAnswers: totalNormalQuestions,
-        correctAnswers: correctNormalAnswers,
+        score: scoreResult.totalScore,
+        totalAnswers: scoreResult.totalNormalQuestions,
+        correctAnswers: scoreResult.correctNormalAnswers,
         evaluationTitle: `Evaluación de Personal - Jefe de Planta`,
         sections: evaluationData.secciones || [],
         isPersonalEvaluation: true,
-        savedResult: savedResult
+        savedResult: savedResult,
+        calificaciones_secciones: scoreResult.calificacionesSecciones,
+        // Forward all new keys from calculateScore
+        pass: scoreResult.pass,
+        trapIncorrect: scoreResult.trapIncorrect,
+        trapQuestions: scoreResult.trapQuestions
       };
 
       onComplete(resultsData);
 
       toast({
         title: "✅ Evaluación completada",
-        description: `Los resultados han sido guardados exitosamente. Puntuación: ${Math.round(totalScore)}%`
+        description: `Los resultados han sido guardados en la base de datos. Puntuación: ${scoreResult.totalScore}%`
       });
 
     } catch (error) {
       console.error('Error completing evaluation:', error);
       toast({
         title: "❌ Error",
-        description: "No se pudo guardar la evaluación. Intenta nuevamente."
+        description: "No se pudo guardar la evaluación en la base de datos: " + error.message
       });
     } finally {
       setLoading(false);

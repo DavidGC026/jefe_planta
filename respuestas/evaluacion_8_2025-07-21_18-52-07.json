@@ -1,0 +1,21 @@
+{
+    "id": "8",
+    "nombre": "TestUser2",
+    "fecha": "2025-07-21 18:52:07",
+    "tipo_evaluacion": "personal",
+    "calificaciones_secciones": {
+        "Conocimiento técnico": {
+            "porcentaje": 90,
+            "ponderacion": 100
+        }
+    },
+    "total_obtenido": 90,
+    "respuestas": {
+        "pregunta1": "si",
+        "pregunta2": "no"
+    },
+    "observaciones": "Test fail case: 90% but with 3 trap errors - should be REPROBADO",
+    "pass_status": "REPROBADO",
+    "trap_incorrect_count": 3,
+    "timestamp": 1753123927
+}

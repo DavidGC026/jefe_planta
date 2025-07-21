@@ -1,0 +1,368 @@
+
+      
+      // Calcular porcentaje de la sección
+      const percentage = sectionQuestions > 0 ? (sectionScore / (sectionQuestions * 10)) * 100 : 0;
+      
+      return {
+        name: section.nombre || section.title || `Sección ${index + 1}`,
+        percentage: Math.min(Math.max(percentage, 0), 100), // Asegurar que esté entre 0-100
+        angle: (index * 360) / sections.length,
+        questionsCount: sectionQuestions,
+        score: sectionScore
+      };
+    });
+
+    // Si todas las secciones tienen 0%, usar el score general distribuido
+    const allZero = sectionData.every(section => section.percentage === 0);
+    if (allZero && score > 0) {
+      // Distribuir el score general entre todas las secciones
+      sectionData.forEach(section => {
+        section.percentage = score;
+      });
+    }
+
+    const numSections = sectionData.length;
+    
+    // Generar puntos del polígono
+    const radarPoints = sectionData.map(section => {
+      const angle = (section.angle - 90) * (Math.PI / 180); // -90 para empezar arriba
+      const radius = minRadius + (section.percentage / 100) * (maxRadius - minRadius);
+      const x = 500 + radius * Math.cos(angle); // Usar coordenadas del nuevo centro
+      const y = 500 + radius * Math.sin(angle);
+      return { x, y, ...section };
+    });
+
+    // Crear path del polígono
+    const pathData = radarPoints.map((point, index) => 
+      `${index === 0 ? 'M' : 'L'} ${point.x} ${point.y}`
+    ).join(' ') + ' Z';
+
+    return (
+      <div className="relative flex items-center justify-center mb-6">
+        <svg width="1000" height="1000" className="drop-shadow-lg"> {/* Aumentar tamaño del SVG para más espacio */}
+          {/* Definir gradientes para los anillos */}
+          <defs>
+            <radialGradient id="redGradient" cx="50%" cy="50%" r="50%">
+              <stop offset="0%" stopColor="#ef4444" stopOpacity="0.8" />
+              <stop offset="100%" stopColor="#dc2626" stopOpacity="0.9" />
+            </radialGradient>
+            <radialGradient id="yellowGradient" cx="50%" cy="50%" r="50%">
+              <stop offset="0%" stopColor="#eab308" stopOpacity="0.8" />
+              <stop offset="100%" stopColor="#ca8a04" stopOpacity="0.9" />
+            </radialGradient>
+            <radialGradient id="greenGradient" cx="50%" cy="50%" r="50%">
+              <stop offset="0%" stopColor="#22c55e" stopOpacity="0.8" />
+              <stop offset="100%" stopColor="#16a34a" stopOpacity="0.9" />
+            </radialGradient>
+          </defs>
+
+          {/* Anillos de fondo con colores */}
+          {/* Anillo exterior - Verde (86-100%) */}
+          {/* Centrar en el nuevo tamaño */}
+          <circle
+            cx={500}
+            cy={500}
+            r={maxRadius + 20}
+            fill="url(#greenGradient)"
+            stroke="#16a34a"
+            strokeWidth="2"
+          />
+          
+          {/* Anillo medio - Amarillo (61-85%) */}
+          <circle
+            cx={500}
+            cy={500}
+            r={maxRadius - 20}
+            fill="url(#yellowGradient)"
+            stroke="#ca8a04"
+            strokeWidth="2"
+          />
+          
+          {/* Anillo interior - Rojo (0-60%) */}
+          <circle
+            cx={500}
+            cy={500}
+            r={maxRadius - 60}
+            fill="url(#redGradient)"
+            stroke="#dc2626"
+            strokeWidth="2"
+          />
+
+          {/* Líneas de la cuadrícula radial */}
+          {[20, 40, 60, 80, 100].map(percent => {
+            const radius = minRadius + (percent / 100) * (maxRadius - minRadius);
+            return (
+              <circle
+                key={percent}
+                cx={500}
+                cy={500}
+                r={radius}
+                fill="none"
+                stroke="rgba(255, 255, 255, 0.6)"
+                strokeWidth="1"
+                strokeDasharray="5,5"
+              />
+            );
+          })}
+
+          {/* Líneas radiales desde el centro */}
+          {sectionData.map((section, index) => {
+            const angle = (section.angle - 90) * (Math.PI / 180);
+            const endX = 500 + (maxRadius + 15) * Math.cos(angle);
+            const endY = 500 + (maxRadius + 15) * Math.sin(angle);
+            
+            return (
+              <line
+                key={index}
+                x1={500}
+                y1={500}
+                x2={endX}
+                y2={endY}
+                stroke="rgba(255, 255, 255, 0.7)"
+                strokeWidth="1"
+              />
+            );
+          })}
+
+          {/* Polígono de datos */}
+          <path
+            d={pathData}
+            fill="rgba(59, 130, 246, 0.4)"
+            stroke="#3b82f6"
+            strokeWidth="4"
+            strokeLinejoin="round"
+            style={{
+              filter: 'drop-shadow(0 4px 8px rgba(0,0,0,0.3))'
+            }}
+          />
+
+          {/* Puntos de datos */}
+          {radarPoints.map((point, index) => (
+            <circle
+              key={index}
+              cx={point.x}
+              cy={point.y}
+              r="6"
+              fill="#3b82f6"
+              stroke="white"
+              strokeWidth="3"
+              style={{
+                filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.4))'
+              }}
+            />
+          ))}
+
+          {/* Etiquetas de las secciones */}
+          {radarPoints.map((point, index) => {
+            const angle = (point.angle - 90) * (Math.PI / 180);
+            const labelRadius = maxRadius + 80; // Reducir distancia para que quede más cerca
+            const labelX = 500 + labelRadius * Math.cos(angle);
+            const labelY = 500 + labelRadius * Math.sin(angle);
+            
+            // Ajustar posición del texto según el ángulo
+            let textAnchor = 'middle';
+            let dominantBaseline = 'middle';
+            
+            if (labelX > 500 + 10) textAnchor = 'start';
+            else if (labelX < 500 - 10) textAnchor = 'end';
+            
+            if (labelY > 500 + 10) dominantBaseline = 'hanging';
+            else if (labelY < 500 - 10) dominantBaseline = 'baseline';
+
+            // Dividir texto largo en múltiples líneas
+            const maxCharsPerLine = 35; // Aumentar caracteres por línea
+            const words = point.name.split(' ');
+            const lines = [];
+            let currentLine = '';
+            
+            words.forEach(word => {
+              if ((currentLine + word).length <= maxCharsPerLine) {
+                currentLine += (currentLine ? ' ' : '') + word;
+              } else {
+                if (currentLine) lines.push(currentLine);
+                currentLine = word;
+              }
+            });
+            if (currentLine) lines.push(currentLine);
+            
+            // Permitir hasta 4 líneas para textos más largos
+            if (lines.length > 4) {
+              lines[3] = lines[3].length > 30 ? lines[3].substring(0, 30) + '...' : lines[3];
+              lines.splice(4);
+            }
+
+            return (
+              <g key={index}>
+                {/* Texto del nombre de la sección en múltiples líneas */}
+                {lines.map((line, lineIndex) => (
+                  <text
+                    key={lineIndex}
+                    x={labelX}
+                    y={labelY - 20 + (lineIndex * 18) - ((lines.length - 1) * 9)} // Mejor espaciado vertical
+                    textAnchor={textAnchor}
+                    dominantBaseline="middle"
+                    className="text-sm font-bold fill-white"
+                    style={{
+                      fontSize: '14px',
+                      textShadow: '2px 2px 4px rgba(0,0,0,0.9), -2px -2px 4px rgba(0,0,0,0.9), 2px -2px 4px rgba(0,0,0,0.9), -2px 2px 4px rgba(0,0,0,0.9)',
+                      filter: 'drop-shadow(3px 3px 6px rgba(0,0,0,0.9))'
+                    }}
+                  >
+                    {line}
+                  </text>
+                ))}
+                
+                {/* Porcentaje */}
+                <text
+                  x={labelX}
+                  y={labelY + 20 + ((lines.length - 1) * 9)} // Ajustar posición del porcentaje
+                  textAnchor={textAnchor}
+                  dominantBaseline="middle"
+                  className="text-lg font-bold fill-yellow-300"
+                  style={{
+                    fontSize: '18px',
+                    textShadow: '2px 2px 4px rgba(0,0,0,0.9), -2px -2px 4px rgba(0,0,0,0.9), 2px -2px 4px rgba(0,0,0,0.9), -2px 2px 4px rgba(0,0,0,0.9)',
+                    filter: 'drop-shadow(3px 3px 6px rgba(0,0,0,0.9))'
+                  }}
+                >
+                  {Math.round(point.percentage)}%
+                </text>
+              </g>
+            );
+          })}
+
+        </svg>
+      </div>
+    );
+  };
+
+  // Función para generar gráfica circular simple (fallback)
+  const generateSimpleCircularChart = () => {
+    const centerX = 200;
+    const centerY = 200;
+    const outerRadius = 120;
+    const middleRadius = 90;
+    const innerRadius = 60;
+    const strokeWidth = 30;
+    
+    // Calcular el porcentaje para la gráfica
+    const percentage = Math.min(Math.max(score, 0), 100);
+    const circumference = 2 * Math.PI * outerRadius;
+    const strokeDasharray = circumference;
+    const strokeDashoffset = circumference - (percentage / 100) * circumference;
+    
+    // Determinar color del progreso según los rangos especificados
+    let progressColor;
+    if (isPersonalEvaluation) {
+      // Para evaluación de personal: 0-90% rojo, 91-100% verde
+      progressColor = score >= 91 ? '#22c55e' : '#ef4444';
+    } else {
+      // Para otras evaluaciones: 0-60% rojo, 61-85% amarillo, 86-100% verde
+      if (score >= 86) {
+        progressColor = '#22c55e'; // Verde
+      } else if (score >= 61) {
+        progressColor = '#eab308'; // Amarillo
+      } else {
+        progressColor = '#ef4444'; // Rojo
+      }
+    }
+
+    return (
+      <div className="relative flex items-center justify-center mb-6">
+        <svg width="400" height="400" className="transform -rotate-90">
+          {/* Anillo exterior - Verde (86-100%) */}
+          <circle
+            cx={centerX}
+            cy={centerY}
+            r={outerRadius}
+            fill="none"
+            stroke="#22c55e"
+            strokeWidth={strokeWidth}
+            opacity="0.3"
+          />
+          
+          {/* Anillo medio - Amarillo (61-85%) */}
+          <circle
+            cx={centerX}
+            cy={centerY}
+            r={middleRadius}
+            fill="none"
+            stroke="#eab308"
+            strokeWidth={strokeWidth}
+            opacity="0.3"
+          />
+          
+          {/* Anillo interior - Rojo (0-60%) */}
+          <circle
+            cx={centerX}
+            cy={centerY}
+            r={innerRadius}
+            fill="none"
+            stroke="#ef4444"
+            strokeWidth={strokeWidth}
+            opacity="0.3"
+          />
+          
+          {/* Círculo de progreso */}
+          <circle
+            cx={centerX}
+            cy={centerY}
+            r={outerRadius}
+            fill="none"
+            stroke={progressColor}
+            strokeWidth={strokeWidth}
+            strokeLinecap="round"
+            strokeDasharray={strokeDasharray}
+            strokeDashoffset={strokeDashoffset}
+            style={{
+              transition: 'stroke-dashoffset 1.5s ease-in-out',
+            }}
+          />
+        </svg>
+        
+        {/* Contenido central */}
+        <div className="absolute inset-0 flex flex-col items-center justify-center">
+          <div className={`text-6xl font-bold ${getScoreColor(score, isPersonalEvaluation)}`}>
+            {score}%
+          </div>
+          <div className="text-lg text-gray-600 mt-2">
+            Puntuación
+          </div>
+          {!isPlantStatus && correctAnswers && (
+            <div className="text-sm text-gray-500 mt-1">
+              {correctAnswers}/{totalAnswers} correctas
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  };
+
+  const generateReportData = () => {
+    const reportData = {
+      evaluacion: {
+        titulo: results.evaluationTitle,
+        fecha: new Date().toLocaleDateString('es-MX'),
+        hora: new Date().toLocaleTimeString('es-MX'),
+        puntuacion: score,
+        total_preguntas: totalAnswers,
+        respuestas_correctas: correctAnswers || 'N/A',
+        estado: status,
+        tipo: isPlantStatus ? 'Estado de Planta' : 'Cuestionario con Ponderación por Secciones',
+        sistema_calificacion: isPersonalEvaluation 
+          ? 'Personal (Aprobado ≥91%)' 
+          : 'Estándar (Aprobado ≥70%)'
+      },
+      secciones: results.sections || [],
+      respuestas: results.answers || {},
+      estadisticas: {
+        porcentaje_aciertos: isPlantStatus ? 'N/A' : Math.round((correctAnswers / totalAnswers) * 100),
+        tiempo_evaluacion: 'N/A',
+        observaciones: 'Evaluación completada exitosamente con ponderación por secciones',
+        rango_color: getRangeDescription(score, isPersonalEvaluation),
+        sistema_ponderacion: 'Basado en tabla secciones_evaluacion'
+      }
+    };
+
+    return reportData;
+  };

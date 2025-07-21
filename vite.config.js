@@ -16,6 +16,11 @@ export default defineConfig({
 				target: 'http://localhost',
 				changeOrigin: true,
 				rewrite: (path) => path.replace(/^\/api/, '/imcyc/api')
+			},
+			'/jefedeplanta/api': {
+				target: 'http://localhost',
+				changeOrigin: true,
+				secure: false
 			}
 		}
 	},

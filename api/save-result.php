@@ -13,8 +13,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 // Database configuration
 $host = 'localhost';
 $dbname = 'resultados';
-$username = 'root';
-$password = '';
+$username = 'admin';
+$password = 'Imc590923cz4#';
 
 try {
     $pdo = new PDO("mysql:host=$host;dbname=$dbname;charset=utf8", $username, $password);
@@ -39,27 +39,67 @@ try {
             total_obtenido, 
             respuestas, 
             observaciones,
+            pass_status,
+            trap_incorrect_count,
             created_at
-        ) VALUES (?, NOW(), ?, ?, ?, ?, ?, NOW())";
+        ) VALUES (?, NOW(), ?, ?, ?, ?, ?, ?, ?, NOW())";
         
         $stmt = $pdo->prepare($sql);
+        // Map boolean pass to enum value
+        $passStatus = ($input['pass'] ?? false) ? 'APROBADO' : 'REPROBADO';
+        
         $stmt->execute([
             $input['nombre'] ?? 'usuario1',
             'personal',
             json_encode($input['calificaciones_secciones'] ?? []),
             $input['total_obtenido'] ?? 0,
             json_encode($input['respuestas'] ?? []),
-            $input['observaciones'] ?? ''
+            $input['observaciones'] ?? '',
+            $passStatus,
+            $input['trapIncorrect'] ?? 0
         ]);
         
         $id = $pdo->lastInsertId();
+        
+        // Try to save JSON file (optional - don't break if it fails)
+        $filename = null;
+        try {
+            $respuestasDir = '../respuestas/';
+            if (!file_exists($respuestasDir)) {
+                mkdir($respuestasDir, 0755, true);
+            }
+            
+            $filename = 'evaluacion_' . $id . '_' . date('Y-m-d_H-i-s') . '.json';
+            $filepath = $respuestasDir . $filename;
+            
+            $jsonData = [
+                'id' => $id,
+                'nombre' => $input['nombre'] ?? 'usuario1',
+                'fecha' => date('Y-m-d H:i:s'),
+                'tipo_evaluacion' => 'personal',
+                'calificaciones_secciones' => $input['calificaciones_secciones'] ?? [],
+                'total_obtenido' => $input['total_obtenido'] ?? 0,
+                'respuestas' => $input['respuestas'] ?? [],
+                'observaciones' => $input['observaciones'] ?? '',
+                'pass_status' => $passStatus,
+                'trap_incorrect_count' => $input['trapIncorrect'] ?? 0,
+                'timestamp' => time()
+            ];
+            
+            file_put_contents($filepath, json_encode($jsonData, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
+        } catch (Exception $fileError) {
+            // Log the error but don't fail the request
+            error_log('Warning: Could not save JSON file: ' . $fileError->getMessage());
+            $filename = null;
+        }
         
         // Return success response
         http_response_code(201);
         echo json_encode([
             'success' => true,
             'id' => $id,
-            'message' => 'Resultado guardado exitosamente'
+            'filename' => $filename,
+            'message' => 'Resultado guardado exitosamente en base de datos y archivo JSON'
         ]);
         
     } elseif ($_SERVER['REQUEST_METHOD'] === 'GET') {
@@ -72,7 +112,7 @@ try {
             $result['calificaciones_secciones'] = json_decode($result['calificaciones_secciones'], true);
             $result['respuestas'] = json_decode($result['respuestas'], true);
         }
-        
+
         echo json_encode([
             'success' => true,
             'data' => $results

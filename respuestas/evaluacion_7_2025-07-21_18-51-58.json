@@ -1,0 +1,21 @@
+{
+    "id": "7",
+    "nombre": "TestUser1",
+    "fecha": "2025-07-21 18:51:58",
+    "tipo_evaluacion": "personal",
+    "calificaciones_secciones": {
+        "Conocimiento técnico": {
+            "porcentaje": 90,
+            "ponderacion": 100
+        }
+    },
+    "total_obtenido": 90,
+    "respuestas": {
+        "pregunta1": "si",
+        "pregunta2": "no"
+    },
+    "observaciones": "Test pass case: 90% with 2 trap errors",
+    "pass_status": "APROBADO",
+    "trap_incorrect_count": 2,
+    "timestamp": 1753123918
+}

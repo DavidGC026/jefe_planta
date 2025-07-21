@@ -13,6 +13,8 @@ CREATE TABLE IF NOT EXISTS evaluaciones_personal (
     total_obtenido DECIMAL(5,2) NOT NULL DEFAULT 0,
     respuestas JSON,
     observaciones TEXT,
+    pass_status ENUM('APROBADO', 'REPROBADO') DEFAULT 'REPROBADO',
+    trap_incorrect_count INT DEFAULT 0,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );

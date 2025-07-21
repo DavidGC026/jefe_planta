@@ -22,7 +22,6 @@ function App() {
       {currentScreen === 'evaluation' && (
         <EvaluationScreenPersonal
           onComplete={handleEvaluationComplete}
-          username="usuario1"
         />
       )}
       
