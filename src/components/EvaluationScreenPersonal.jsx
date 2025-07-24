@@ -243,10 +243,45 @@ const EvaluationScreenPersonal = ({ onComplete, onSkipToResults, username }) => 
       // Usar el nuevo método de cálculo del servicio de base de datos
       const scoreResult = databaseService.calculateScore(evaluationData.secciones, answers);
 
+      // Preparar preguntas con respuestas correctas
+      const preguntasConRespuestas = [];
+      
+      evaluationData.secciones.forEach((seccion, sectionIndex) => {
+        seccion.preguntas.forEach((pregunta, qIndex) => {
+          const key = `${selectedRole}-${sectionIndex}-${qIndex}`;
+          const respuestaUsuario = answers[key];
+          
+          if (respuestaUsuario) {
+            // Determinar la respuesta correcta según el tipo de pregunta
+            let respuestaCorrecta;
+            if (pregunta.tipo === 'seleccion_multiple' && pregunta.respuesta_correcta) {
+              respuestaCorrecta = pregunta.respuesta_correcta;
+            } else if (pregunta.tipo === 'abierta' || !pregunta.opciones) {
+              if (pregunta.es_trampa) {
+                respuestaCorrecta = 'no';
+              } else {
+                respuestaCorrecta = 'si';
+              }
+            }
+            
+            preguntasConRespuestas.push({
+              seccion: seccion.nombre,
+              pregunta: pregunta.pregunta,
+              respuesta_usuario: respuestaUsuario,
+              respuesta_correcta: respuestaCorrecta,
+              es_trampa: pregunta.es_trampa || false,
+              tipo: pregunta.tipo,
+              es_correcta: respuestaUsuario === respuestaCorrecta
+            });
+          }
+        });
+      });
+      
       // Preparar datos para guardar en la base de datos
       const evaluacionData = {
         nombre: userName,
         calificaciones_secciones: scoreResult.calificacionesSecciones,
+        preguntas: preguntasConRespuestas,
         total_obtenido: scoreResult.totalScore,
         respuestas: answers,
         observaciones: `Evaluación de personal completada - Jefe de Planta - Puntuación: ${scoreResult.totalScore}%`,

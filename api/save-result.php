@@ -13,8 +13,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 // Database configuration
 $host = 'localhost';
 $dbname = 'resultados';
-$username = '';
-$password = '';
+$username = 'admin';
+$password = 'Imc590923cz4#';
 
 try {
     $pdo = new PDO("mysql:host=$host;dbname=$dbname;charset=utf8", $username, $password);
@@ -38,11 +38,12 @@ try {
             calificaciones_secciones,
             total_obtenido,
             respuestas,
+            preguntas,
             observaciones,
             pass_status,
             trap_incorrect_count,
             created_at
-        ) VALUES (?, NOW(), ?, ?, ?, ?, ?, ?, ?, NOW())";
+        ) VALUES (?, NOW(), ?, ?, ?, ?, ?, ?, ?, ?, NOW())";
 
         $stmt = $pdo->prepare($sql);
         // Map boolean pass to enum value
@@ -54,6 +55,7 @@ try {
             json_encode($input['calificaciones_secciones'] ?? []),
             $input['total_obtenido'] ?? 0,
             json_encode($input['respuestas'] ?? []),
+            json_encode($input['preguntas'] ?? []),
             $input['observaciones'] ?? '',
             $passStatus,
             $input['trapIncorrect'] ?? 0
@@ -111,6 +113,7 @@ try {
         foreach ($results as &$result) {
             $result['calificaciones_secciones'] = json_decode($result['calificaciones_secciones'], true);
             $result['respuestas'] = json_decode($result['respuestas'], true);
+            $result['preguntas'] = json_decode($result['preguntas'], true);
         }
 
         echo json_encode([

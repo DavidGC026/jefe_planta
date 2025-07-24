@@ -1,0 +1,125 @@
+{
+    "id": "14",
+    "nombre": "usuario1",
+    "fecha": "2025-07-23 19:24:46",
+    "tipo_evaluacion": "personal",
+    "calificaciones_secciones": {
+        "Conocimiento técnico y operativo": {
+            "porcentaje": 60,
+            "ponderacion": 10,
+            "contribucion": 6
+        },
+        "Gestión de la producción": {
+            "porcentaje": 20,
+            "ponderacion": 10,
+            "contribucion": 2
+        },
+        "Mantenimiento del equipo": {
+            "porcentaje": 0,
+            "ponderacion": 10,
+            "contribucion": 0
+        },
+        "Gestión del personal": {
+            "porcentaje": 100,
+            "ponderacion": 10,
+            "contribucion": 10
+        },
+        "Seguridad y cumplimiento normativo": {
+            "porcentaje": 80,
+            "ponderacion": 10,
+            "contribucion": 8
+        },
+        "Control de calidad": {
+            "porcentaje": 40,
+            "ponderacion": 10,
+            "contribucion": 4
+        },
+        "Documentación y control administrativo": {
+            "porcentaje": 40,
+            "ponderacion": 10,
+            "contribucion": 4
+        },
+        "Mejora continua y enfoque a resultados": {
+            "porcentaje": 40,
+            "ponderacion": 10,
+            "contribucion": 4
+        },
+        "Coordinación con logística y clientes": {
+            "porcentaje": 60,
+            "ponderacion": 10,
+            "contribucion": 6
+        },
+        "Resolución de problemas": {
+            "porcentaje": 40,
+            "ponderacion": 10,
+            "contribucion": 4
+        }
+    },
+    "total_obtenido": 48,
+    "respuestas": {
+        "jefe_planta-0-0": "a",
+        "jefe_planta-0-1": "b",
+        "jefe_planta-0-2": "b",
+        "jefe_planta-0-3": "b",
+        "jefe_planta-0-4": "b",
+        "jefe_planta-0-5": "b",
+        "jefe_planta-1-0": "b",
+        "jefe_planta-1-1": "b",
+        "jefe_planta-1-2": "b",
+        "jefe_planta-1-3": "b",
+        "jefe_planta-1-4": "b",
+        "jefe_planta-1-5": "b",
+        "jefe_planta-2-0": "b",
+        "jefe_planta-2-1": "b",
+        "jefe_planta-2-2": "b",
+        "jefe_planta-2-3": "b",
+        "jefe_planta-2-4": "b",
+        "jefe_planta-2-5": "b",
+        "jefe_planta-3-0": "b",
+        "jefe_planta-3-1": "b",
+        "jefe_planta-3-2": "b",
+        "jefe_planta-3-3": "b",
+        "jefe_planta-3-4": "b",
+        "jefe_planta-3-5": "b",
+        "jefe_planta-4-0": "b",
+        "jefe_planta-4-1": "b",
+        "jefe_planta-4-2": "b",
+        "jefe_planta-4-3": "b",
+        "jefe_planta-4-4": "b",
+        "jefe_planta-4-5": "b",
+        "jefe_planta-5-0": "b",
+        "jefe_planta-5-1": "b",
+        "jefe_planta-5-2": "b",
+        "jefe_planta-5-3": "b",
+        "jefe_planta-5-4": "b",
+        "jefe_planta-5-5": "b",
+        "jefe_planta-6-0": "b",
+        "jefe_planta-6-1": "b",
+        "jefe_planta-6-2": "b",
+        "jefe_planta-6-3": "b",
+        "jefe_planta-6-4": "b",
+        "jefe_planta-6-5": "b",
+        "jefe_planta-7-0": "b",
+        "jefe_planta-7-1": "b",
+        "jefe_planta-7-2": "b",
+        "jefe_planta-7-3": "b",
+        "jefe_planta-7-4": "b",
+        "jefe_planta-7-5": "b",
+        "jefe_planta-8-0": "b",
+        "jefe_planta-8-1": "b",
+        "jefe_planta-8-2": "b",
+        "jefe_planta-8-3": "b",
+        "jefe_planta-8-4": "b",
+        "jefe_planta-8-5": "b",
+        "jefe_planta-9-0": "b",
+        "jefe_planta-9-1": "b",
+        "jefe_planta-9-2": "b",
+        "jefe_planta-9-3": "b",
+        "jefe_planta-9-4": "b",
+        "jefe_planta-9-5": "b"
+    },
+    "observaciones": "Evaluación de personal completada - Jefe de Planta - Puntuación: 48%",
+    "pass_status": "REPROBADO",
+    "trap_incorrect_count": 6,
+    "timestamp": 1753298686
+}

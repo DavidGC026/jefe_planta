@@ -6,8 +6,8 @@ header('Access-Control-Allow-Headers: Content-Type');
 
 // Configuración de la base de datos
 $servername = "localhost";
-$username = ""; // Se puede cambiar según las credenciales
-$password = ""; // Se puede cambiar según las credenciales
+$username = "admin"; // Se puede cambiar según las credenciales
+$password = "Imc590923cz4#"; // Se puede cambiar según las credenciales
 $dbname = "plantas_concreto2";
 
 try {
