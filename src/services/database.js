@@ -21,7 +21,7 @@ class DatabaseService {
       }
 
       const data = await response.json();
-      
+
       if (data.success) {
         return data.data || [];
       } else {
@@ -57,7 +57,7 @@ class DatabaseService {
       }
 
       const result = await response.json();
-      
+
       if (result.success) {
         console.log('Resultado guardado en base de datos MySQL:', result);
         return {
@@ -107,7 +107,7 @@ class DatabaseService {
     if (question.tipo === 'seleccion_multiple' && question.respuesta_correcta) {
       return selectedAnswer === question.respuesta_correcta;
     }
-    
+
     // Para preguntas abiertas (sí/no), "sí" es generalmente la respuesta correcta
     // a menos que sea una pregunta trampa
     if (question.tipo === 'abierta' || !question.opciones) {
@@ -118,19 +118,19 @@ class DatabaseService {
       }
       return selectedAnswer === 'si';
     }
-    
+
     return false;
   }
 
   // Validar errores en preguntas trampa
   validateTrapQuestions(sections, answers) {
     let trapErrors = 0;
-    
+
     sections.forEach((seccion, sectionIndex) => {
       seccion.preguntas.forEach((question, qIndex) => {
         const key = `jefe_planta-${sectionIndex}-${qIndex}`;
         const selectedAnswer = answers[key];
-        
+
         // Si es pregunta trampa y la respuesta es incorrecta
         if (question.es_trampa && selectedAnswer) {
           const isCorrect = this.checkAnswer(question, selectedAnswer);
@@ -140,7 +140,7 @@ class DatabaseService {
         }
       });
     });
-    
+
     return {
       trapErrors,
       exceedsMaxErrors: trapErrors > MAX_TRAP_ERRORS,
@@ -181,7 +181,7 @@ class DatabaseService {
 
             // Verificar si la respuesta es correcta
             const isCorrect = this.checkAnswer(question, selectedAnswer);
-            
+
             if (isCorrect) {
               seccionScore += 10;
               seccionCorrect++;
@@ -205,7 +205,7 @@ class DatabaseService {
     totalScore = Math.round(totalScore);
 
     // Evaluate pass/fail after computing totalScore
-    const pass = 
+    const pass =
       totalScore >= APPROVAL_MIN &&
       totalScore <= APPROVAL_MAX &&
       trapIncorrect <= MAX_TRAP_ERRORS;

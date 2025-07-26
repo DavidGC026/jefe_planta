@@ -13,16 +13,16 @@ export default defineConfig({
 		allowedHosts: true,
 		proxy: {
 			'/api': {
-				target: 'http://localhost',
+				target: 'http://localhost:8080',
 				changeOrigin: true,
 				secure: false,
-				rewrite: (path) => path.replace(/^\/api/, '/jefedeplanta/api')
+				rewrite: (path) => path.replace(/^\/api/, '/api')
 			},
 			'/jefedeplanta/api': {
-				target: 'http://localhost',
+				target: 'http://localhost:8080',
 				changeOrigin: true,
 				secure: false,
-				rewrite: (path) => path.replace(/^\/jefedeplanta\/api/, '/jefedeplanta/api')
+				rewrite: (path) => path.replace(/^\/jefedeplanta\/api/, '/api')
 			}
 		}
 	},

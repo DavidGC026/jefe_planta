@@ -6,7 +6,10 @@
 	"scripts": {
 		"dev": "vite",
 		"build": "vite build",
-		"preview": "vite preview"
+		"preview": "vite preview",
+		"start:full": "./start-dev.sh",
+		"start:php": "php -S localhost:8080 -t .",
+		"test:api": "curl -s http://localhost:8080/api/save-result.php | jq ."
 	},
 	"dependencies": {
 		"@radix-ui/react-slot": "^1.0.2",

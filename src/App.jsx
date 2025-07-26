@@ -24,7 +24,7 @@ function App() {
           onComplete={handleEvaluationComplete}
         />
       )}
-      
+
       {currentScreen === 'results' && evaluationResults && (
         <ResultsScreen
           results={evaluationResults}

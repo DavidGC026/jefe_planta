@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { motion } from 'framer-motion';
 import { ArrowLeft, CheckCircle, XCircle } from 'lucide-react';
-import RadarChart from './RadarChart';
+import RadarChart from '../src/components/RadarChart';
 import { APPROVAL_MIN, APPROVAL_MAX, MAX_TRAP_ERRORS } from '@/config/evaluation';
 
 const ResultsScreen = ({ results, onBack, onNewEvaluation, onHome }) => {

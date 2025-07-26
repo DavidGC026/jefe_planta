@@ -1,44 +1,4 @@
-nohup: no se tendrá en cuenta la entrada
-[Wed Jul 23 13:14:14 2025] PHP 8.2.29 Development Server (http://localhost:8080) started
-[Wed Jul 23 13:14:21 2025] [::1]:38958 Accepted
-[Wed Jul 23 13:14:21 2025] [::1]:38958 [500]: GET /api/get-questions.php
-[Wed Jul 23 13:14:21 2025] [::1]:38958 Closing
-[Wed Jul 23 13:16:12 2025] [::1]:60712 Accepted
-[Wed Jul 23 13:16:12 2025] [::1]:60712 [200]: GET /api/get-questions.php
-[Wed Jul 23 13:16:12 2025] [::1]:60712 Closing
-[Wed Jul 23 13:16:42 2025] [::1]:42452 Accepted
-[Wed Jul 23 13:16:42 2025] [::1]:42452 [404]: GET /jefedeplanta/api/get-questions.php?tipo=personal&rol=jefe_planta - No such file or directory
-[Wed Jul 23 13:16:42 2025] [::1]:42452 Closing
-[Wed Jul 23 13:16:42 2025] [::1]:42462 Accepted
-[Wed Jul 23 13:16:42 2025] [::1]:42462 [404]: GET /jefedeplanta/api/get-questions.php?tipo=personal&rol=jefe_planta - No such file or directory
-[Wed Jul 23 13:16:42 2025] [::1]:42462 Closing
-[Wed Jul 23 13:17:22 2025] [::1]:42704 Accepted
-[Wed Jul 23 13:17:22 2025] [::1]:42704 [200]: GET /api/get-questions.php?tipo=personal&rol=jefe_planta
-[Wed Jul 23 13:17:22 2025] [::1]:42704 Closing
-[Wed Jul 23 13:18:45 2025] [::1]:45790 Accepted
-[Wed Jul 23 13:18:45 2025] [::1]:45790 [200]: GET /api/get-questions.php?tipo=personal&rol=jefe_planta
-[Wed Jul 23 13:18:45 2025] [::1]:45790 Closing
-[Wed Jul 23 13:18:45 2025] [::1]:45794 Accepted
-[Wed Jul 23 13:18:45 2025] [::1]:45794 [200]: GET /api/get-questions.php?tipo=personal&rol=jefe_planta
-[Wed Jul 23 13:18:45 2025] [::1]:45794 Closing
-[Wed Jul 23 13:20:12 2025] [::1]:51446 Accepted
-[Wed Jul 23 13:20:12 2025] [::1]:51446 [201]: POST /api/save-result.php
-[Wed Jul 23 13:20:12 2025] [::1]:51446 Closing
-[Wed Jul 23 13:22:19 2025] [::1]:57824 Accepted
-[Wed Jul 23 13:22:19 2025] [::1]:57824 [200]: GET /api/save-result.php
-[Wed Jul 23 13:22:19 2025] [::1]:57824 Closing
-[Wed Jul 23 13:23:55 2025] [::1]:37584 Accepted
-[Wed Jul 23 13:23:55 2025] [::1]:37584 [200]: GET /api/get-questions.php?tipo=personal&rol=jefe_planta
-[Wed Jul 23 13:23:55 2025] [::1]:37584 Closing
-[Wed Jul 23 13:23:55 2025] [::1]:37588 Accepted
-[Wed Jul 23 13:23:55 2025] [::1]:37588 [200]: GET /api/get-questions.php?tipo=personal&rol=jefe_planta
-[Wed Jul 23 13:23:55 2025] [::1]:37588 Closing
-[Wed Jul 23 13:24:46 2025] [::1]:42084 Accepted
-[Wed Jul 23 13:24:46 2025] [::1]:42084 [201]: POST /api/save-result.php
-[Wed Jul 23 13:24:46 2025] [::1]:42084 Closing
-[Wed Jul 23 13:34:37 2025] [::1]:50670 Accepted
-[Wed Jul 23 13:34:37 2025] [::1]:50670 [200]: GET /api/get-questions.php?tipo=personal&rol=jefe_planta
-[Wed Jul 23 13:34:37 2025] [::1]:50670 Closing
-[Wed Jul 23 13:34:37 2025] [::1]:50672 Accepted
-[Wed Jul 23 13:34:37 2025] [::1]:50672 [200]: GET /api/get-questions.php?tipo=personal&rol=jefe_planta
-[Wed Jul 23 13:34:37 2025] [::1]:50672 Closing
+[Fri Jul 25 17:58:36 2025] PHP 8.4.10 Development Server (http://localhost:8080) started
+[Fri Jul 25 17:58:38 2025] 127.0.0.1:60156 Accepted
+[Fri Jul 25 17:58:38 2025] 127.0.0.1:60156 [200]: GET /api/save-result.php
+[Fri Jul 25 17:58:38 2025] 127.0.0.1:60156 Closing
